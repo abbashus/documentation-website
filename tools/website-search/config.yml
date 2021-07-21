@@ -1,0 +1,21 @@
+---
+  indexing_directories:
+  - _clients
+  - _dashboards
+  - _im-plugin
+  - _monitoring-plugins
+  - _opensearch
+  - _search-plugins
+  - _security-plugin
+  - _upgrade-to
+
+#indexing_directories = [
+#  '_clients',
+#  '_dashboards',
+#  '_im-plugin',
+#  '_monitoring-plugins',
+#  '_opensearch',
+#  '_search-plugins',
+#  '_security-plugin',
+#  '_upgrade-to'
+#]
