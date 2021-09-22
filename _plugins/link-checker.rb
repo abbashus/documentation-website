@@ -27,7 +27,7 @@ module Jekyll::LinkChecker
   ##
   # Pattern to identify documents that should be excluded based on their URL
 
-  @excluded_paths = /(\.(css|js|json|map|xml|txt|yml)$)/i.freeze
+  @excluded_paths = /(\.(css|js|json|map|xml|txt|yml|tpl)$)/i.freeze
 
   ##
   # Pattern to identify certain HTML tags whose content should be excluded from indexing
@@ -122,13 +122,18 @@ module Jekyll::LinkChecker
     @urls.each do |url, pages|
       @failures << "#{url}, linked to in ./#{pages.to_a.join(", ./")}" unless self.check(url)
     end
-    
-    msg = "Found #{@failures.size} dead link#{@failures.size > 1 ? 's' : ''}:\n#{@failures.join("\n")}" unless @failures.empty?
 
-    if @should_build_fatally
-      raise msg
+    unless @failures.empty?
+      msg = "Found #{@failures.size} dead link#{@failures.size > 1 ? 's' : ''}:\n#{@failures.join("\n")}"
+
+      if @should_build_fatally
+        raise msg
+      else
+        puts "\nLinkChecker: [Warning] #{msg}\n"
+      end
+
     else
-      puts "\nLinkChecker: [Warning] #{msg}\n"
+      puts "\nLinkChecker: [Done]\n"
     end
   end
 
