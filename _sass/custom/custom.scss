@@ -54,7 +54,7 @@ body {
 
 code {
   @include monospace;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: auto;
 }
@@ -105,6 +105,13 @@ code {
     padding-top: 1rem;
     padding-bottom: 0.6rem;
     padding-left: $sp-5;
+  }
+}
+
+.site-footer {
+  display: none;
+  @include mq(lg) {
+    display: block;
   }
 }
 
@@ -1084,6 +1091,11 @@ main {
   @include sans-serif;
   @include warning-stripes;
 
+  /* To match the website */
+  font-size: 1.125rem;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 1px;
+
   a {
     color: $text;
 
@@ -1117,4 +1129,36 @@ version-selector {
   --normal-bg: linear-gradient(#{lighten($blue-300, 5%)}, #{darken($blue-300, 2%)});
   --hover-bg: linear-gradient(#{lighten($blue-300, 2%)}, #{darken($blue-300, 4%)});
   --link-color: #{$blue-300};
+}
+
+.custom-search-results {
+  padding: 1rem;
+
+  & > div:not(:first-child) {
+    margin-top: 2rem;
+  }
+  cite {
+    @include font-size(12);
+    @include sans-serif;
+    color: $grey-dk-300;
+    text-decoration: none;
+    font-style: normal;
+    display: block;
+    line-height: 1;
+    font-weight: normal;
+  }
+
+  a {
+    @include font-size(20);
+    @include heading-sans-serif;
+    line-height: 1.6;
+    font-weight: bold;
+  }
+
+  span {
+    @include font-size(14);
+    color: $grey-dk-200;
+    line-height: 1.4;
+    display: block;
+  }
 }
