@@ -112,6 +112,7 @@
         document.body.removeEventListener('pointerdown', handlePointerDown, false);
 
         if (destroy) {
+            abortPreviousCalls();
             emptyResults();
             lastQuery = '';
         }
