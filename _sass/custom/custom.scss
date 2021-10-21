@@ -1132,10 +1132,8 @@ version-selector {
 }
 
 .custom-search-results {
-  padding: 1rem;
-
-  & > div:not(:first-child) {
-    margin-top: 2rem;
+  & > div {
+    padding: 1rem;
   }
   cite {
     @include font-size(12);
@@ -1160,5 +1158,18 @@ version-selector {
     color: $grey-dk-200;
     line-height: 1.4;
     display: block;
+    overflow-wrap: break-word;
+
+    &:only-child {
+      text-align: center;
+    }
   }
+
+  .highlighted {
+    background: #EAF4F9;
+  }
+}
+
+.banner-alert ~ main .custom-search-results {
+  max-height: calc(100vh - 200% - 60px - 3.6rem) !important;
 }
