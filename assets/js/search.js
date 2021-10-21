@@ -2,8 +2,10 @@
     const elInput = document.getElementById('search-input');
     const elResults = document.getElementById('search-results');
     const elOverlay = document.querySelector('.search-overlay');
+    const elSpinner = document.querySelector('.search-spinner');
     if (!elInput || !elResults || !elOverlay) return;
 
+    const CLASSNAME_SPINNING = 'spinning';
     const CLASSNAME_HIGHLIGHTED = 'highlighted';
 
     const canSmoothScroll = 'scrollBehavior' in document.documentElement.style;
@@ -75,6 +77,9 @@
 
         abortPreviousCalls();
 
+        elSpinner?.classList.add(CLASSNAME_SPINNING);
+        if (!_showingResults) document.documentElement.classList.add('search-active');
+
         try {
             const controller = new AbortController();
             abortControllers.unshift(abortControllers);
@@ -102,11 +107,17 @@
             emptyResults();
             elResults.appendChild(document.createRange().createContextualFragment(chunks.join('')));
             showResults();
-        } catch (ex) {}
+        } catch (ex) {
+            showNoResults();
+        }
+
+        elSpinner?.classList.remove(CLASSNAME_SPINNING);
     }
 
     const hideResults = destroy => {
         _showingResults = false;
+
+        elSpinner?.classList.remove(CLASSNAME_SPINNING);
         document.documentElement.classList.remove('search-active');
         elResults.setAttribute('aria-expanded', 'false');
         document.body.removeEventListener('pointerdown', handlePointerDown, false);
@@ -133,6 +144,7 @@
         emptyResults();
         elResults.appendChild(document.createRange().createContextualFragment('<span>No results found!</span>'));
         showResults();
+        elSpinner?.classList.remove(CLASSNAME_SPINNING);
     };
 
     const emptyResults = () => {
