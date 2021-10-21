@@ -23,7 +23,7 @@ module Jekyll::ContentIndexer
   ##
   # Pattern to identify block HTML tags (not comprehensive)
 
-  @html_block_tags = /\s*<[?\/]?(article|blockquote|d[dlt]|div|fieldset|form|h|li|main|nav|[ou]l|p|section|table).*?>\s*/im.freeze
+  @html_block_tags = /\s*<[?\/]?(article|blockquote|d[dlt]|div|fieldset|form|h|li|main|nav|[ou]l|p|section|table|t[rd]).*?>\s*/im.freeze
 
   ##
   # Pattern to identify certain HTML tags whose content should be excluded from indexing
