@@ -4,11 +4,14 @@
     const elOverlay = document.querySelector('.search-overlay');
     if (!elInput || !elResults || !elOverlay) return;
 
+    const CLASSNAME_HIGHLIGHTED = 'highlighted';
+
     const canSmoothScroll = 'scrollBehavior' in document.documentElement.style;
 
     const docsVersion = elInput.getAttribute('data-docs-version');
 
     let _showingResults = false,
+        animationFrame,
         debounceTimer,
         lastQuery;
 
@@ -47,6 +50,13 @@
         if (!_showingResults && elResults.textContent) showResults();
     });
 
+    elResults.addEventListener('pointerenter', e => {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(() => {
+            highlightResult(e.target?.closest('.custom-search-result'));
+        });
+    }, true);
+
     const debounceInput = () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(doSearch, 300);
@@ -76,11 +86,14 @@
             const chunks = data.results.map(result => result
                 ? `
                 <div class="custom-search-result">
-                    <a href="${result.url}">
-                        <cite>${result.type === 'DOCS' ? `OpenSearch ${result.version} › ` : ''}${result.ancestors?.join?.(' › ')}</cite>
-                        ${result.title}
+                    <a href="${sanitizeAttribute(result.url)}">
+                        <cite>
+                            ${result.type === 'DOCS' ? `OpenSearch ${sanitizeText(result.version)} › ` : ''}
+                            ${sanitizeText(result.ancestors?.join?.(' › '))}
+                        </cite>
+                        ${sanitizeText(result.title)}
                     </a>
-                    <span>${result.content?.replace?.(/\n/g, '&hellip; ')}</span>
+                    <span>${sanitizeText(result.content?.replace?.(/\n/g, '&hellip; '))}</span>
                 </div>
                 `
                 : ''
@@ -105,14 +118,14 @@
     };
 
     const showResults = () => {
+        if (!_showingResults) {
+            _showingResults = true;
+            document.documentElement.classList.add('search-active');
+            elResults.setAttribute('aria-expanded', 'true');
+            document.body.addEventListener('pointerdown', handlePointerDown, false);
+        }
+
         elResults.scrollTo(0, 0);
-
-        if (_showingResults) return;
-
-        _showingResults = true;
-        document.documentElement.classList.add('search-active');
-        elResults.setAttribute('aria-expanded', 'true');
-        document.body.addEventListener('pointerdown', handlePointerDown, false);
     };
 
     const showNoResults = () => {
@@ -126,8 +139,12 @@
         while (elResults.firstChild) elResults.firstChild.remove();
     };
 
-    const _clean = text => {
-        return text?.replace?.(/<.*>/g, '');
+    const sanitizeText = text => {
+        return text?.replace?.(/</g, '&lt;');
+    };
+
+    const sanitizeAttribute = text => {
+        return text?.replace?.(/[>"]+/g, '');
     };
 
     const handlePointerDown = e => {
@@ -139,18 +156,27 @@
         hideResults();
     };
 
+    const highlightResult = node => {
+        if (!node || !_showingResults || node.classList.contains(CLASSNAME_HIGHLIGHTED)) return;
+
+        elResults.querySelectorAll('.custom-search-result.highlighted').forEach(el => {
+            el.classList.remove(CLASSNAME_HIGHLIGHTED);
+        });
+        node.classList.add(CLASSNAME_HIGHLIGHTED);
+    };
+
     const highlightNextResult = (down = true) => {
         const highlighted = elResults.querySelector('.custom-search-result.highlighted');
         let nextResult;
         if (highlighted) {
-            highlighted.classList.remove('highlighted');
+            highlighted.classList.remove(CLASSNAME_HIGHLIGHTED);
             nextResult = highlighted[down ? 'nextElementSibling' : 'previousElementSibling']
         } else {
             nextResult = elResults.querySelector(`.custom-search-result:${down ? 'first' : 'last'}-child`);
         }
 
         if (nextResult) {
-            nextResult.classList.add('highlighted');
+            nextResult.classList.add(CLASSNAME_HIGHLIGHTED);
             if (down) {
                 if (canSmoothScroll) {
                     nextResult.scrollIntoView({behavior: "smooth", block: "end"});
